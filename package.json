@@ -1,6 +1,6 @@
 {
   "name": "cpf-sg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Singapore CPF contribution and allocation calculator (2026 rates onward)",
   "type": "module",
   "exports": {

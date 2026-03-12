@@ -1,0 +1,40 @@
+{
+  "name": "cpf-sg",
+  "version": "1.0.0",
+  "description": "Singapore CPF contribution and allocation calculator (2026 rates onward)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "cli": "tsx src/cli.ts"
+  },
+  "keywords": [
+    "cpf",
+    "singapore",
+    "payroll",
+    "contributions"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.14.0",
+  "devDependencies": {
+    "@inquirer/prompts": "^8.3.0",
+    "@types/node": "^25.4.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "decimal.js": "^10.6.0"
+  }
+}

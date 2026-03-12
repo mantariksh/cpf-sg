@@ -19,7 +19,8 @@
     "test:watch": "vitest",
     "lint": "biome check",
     "lint:fix": "biome check --write",
-    "cli": "tsx src/cli.ts"
+    "cli": "tsx src/cli.ts",
+    "prepublishOnly": "pnpm lint && pnpm build && pnpm test"
   },
   "keywords": [
     "cpf",
@@ -29,7 +30,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/mantariksh/cpf-sg.git"
+    "url": "git+https://github.com/mantariksh/cpf-sg.git"
   },
   "author": "",
   "license": "ISC",

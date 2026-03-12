@@ -1,9 +1,21 @@
 import Decimal from 'decimal.js';
-import type { AllocationOptions, AllocationResult, AllocationBracket } from './types.js';
-import { MIN_CONTRIBUTION_YEAR, truncateToCent, computeCpfAge, currentYearMonth } from './utils.js';
 import { getRatesForYear } from './rates/index.js';
+import type {
+  AllocationBracket,
+  AllocationOptions,
+  AllocationResult,
+} from './types.js';
+import {
+  computeCpfAge,
+  currentYearMonth,
+  MIN_CONTRIBUTION_YEAR,
+  truncateToCent,
+} from './utils.js';
 
-function findAllocationBracket(table: AllocationBracket[], age: number): AllocationBracket | undefined {
+function findAllocationBracket(
+  table: AllocationBracket[],
+  age: number,
+): AllocationBracket | undefined {
   return table.find((b) => age <= b.maxAge);
 }
 
@@ -14,10 +26,17 @@ export function computeAllocation(opts: AllocationOptions): AllocationResult {
   const contributionMonth = opts.contributionMonth ?? ym.month;
 
   if (contributionYear < MIN_CONTRIBUTION_YEAR) {
-    throw new Error(`contributionYear must be ${MIN_CONTRIBUTION_YEAR} or later (got ${contributionYear})`);
+    throw new Error(
+      `contributionYear must be ${MIN_CONTRIBUTION_YEAR} or later (got ${contributionYear})`,
+    );
   }
 
-  const age = computeCpfAge(birthYear, birthMonth, contributionYear, contributionMonth);
+  const age = computeCpfAge(
+    birthYear,
+    birthMonth,
+    contributionYear,
+    contributionMonth,
+  );
   const yearRates = getRatesForYear(contributionYear);
   const bracket = findAllocationBracket(yearRates.allocations, age);
   if (!bracket) {

@@ -1,4 +1,8 @@
-import type { AgeBracket, AllocationBracket, ResidencyStatus } from '../types.js';
+import type {
+  AgeBracket,
+  AllocationBracket,
+  ResidencyStatus,
+} from '../types.js';
 
 export interface YearRates {
   contributions: Record<ResidencyStatus, AgeBracket[]>;
@@ -24,7 +28,10 @@ export function getRatesForYear(contributionYear: number): YearRates {
     }
   }
   if (best === undefined) {
-    throw new Error(`No rate tables registered for contributionYear ${contributionYear}`);
+    throw new Error(
+      `No rate tables registered for contributionYear ${contributionYear}`,
+    );
   }
+  // biome-ignore lint/style/noNonNullAssertion: best is guaranteed to be in the map
   return registry.get(best)!;
 }

@@ -1,10 +1,10 @@
-export { computeContributions } from './contributions.js';
 export { computeAllocation } from './allocation.js';
-export { MIN_CONTRIBUTION_YEAR, computeCpfAge } from './utils.js';
+export { computeContributions } from './contributions.js';
 export type {
-  ResidencyStatus,
-  ContributionOptions,
-  ContributionResult,
   AllocationOptions,
   AllocationResult,
+  ContributionOptions,
+  ContributionResult,
+  ResidencyStatus,
 } from './types.js';
+export { computeCpfAge, MIN_CONTRIBUTION_YEAR } from './utils.js';

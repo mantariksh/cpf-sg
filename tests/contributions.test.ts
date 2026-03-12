@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { computeContributions, computeCpfAge, MIN_CONTRIBUTION_YEAR } from '../src/index.js';
+import { describe, expect, it } from 'vitest';
+import {
+  computeContributions,
+  computeCpfAge,
+  MIN_CONTRIBUTION_YEAR,
+} from '../src/index.js';
 
 // Use a fixed contribution period so tests are deterministic.
 // With contributionMonth=1, cpfAge = contributionYear - birthYear
@@ -68,14 +72,24 @@ describe('computeCpfAge', () => {
 
 describe('minimum contribution year', () => {
   it('rejects contributionYear before 2026 in computeContributions', () => {
-    expect(() => computeContributions({
-      birthYear: 1990, birthMonth: 6, ordinaryWages: 5000, contributionYear: 2025, contributionMonth: 1,
-    })).toThrow(`contributionYear must be ${MIN_CONTRIBUTION_YEAR}`);
+    expect(() =>
+      computeContributions({
+        birthYear: 1990,
+        birthMonth: 6,
+        ordinaryWages: 5000,
+        contributionYear: 2025,
+        contributionMonth: 1,
+      }),
+    ).toThrow(`contributionYear must be ${MIN_CONTRIBUTION_YEAR}`);
   });
 
   it('accepts future contribution years', () => {
     const r = computeContributions({
-      birthYear: 1990, birthMonth: 6, ordinaryWages: 5000, contributionYear: 2030, contributionMonth: 1,
+      birthYear: 1990,
+      birthMonth: 6,
+      ordinaryWages: 5000,
+      contributionYear: 2030,
+      contributionMonth: 1,
     });
     expect(r.total).toBeGreaterThan(0);
   });
@@ -84,29 +98,59 @@ describe('minimum contribution year', () => {
 describe('computeContributions', () => {
   describe('SC ≤55 wage bands', () => {
     it('returns nil for TW ≤ $50', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 30, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 30,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 0, employer: 0, total: 0 });
     });
 
     it('computes employer-only for $50 < TW ≤ $500', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 300, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 300,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 0, employer: 51, total: 51 });
     });
 
     it('computes graduated rate for $500 < TW ≤ $750', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 600, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 600,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 60, employer: 102, total: 162 });
     });
 
     it('computes full rate for TW > $750', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 1000, employer: 850, total: 1850 });
     });
   });
 
   describe('OW ceiling', () => {
     it('caps OW at $8,000', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 10000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 10000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 1600, employer: 1360, total: 2960 });
     });
   });
@@ -119,10 +163,13 @@ describe('computeContributions', () => {
       // AW = 10,000 → capped to 6,000
       // total = 0.37 * (8000 + 6000) = 5180, employee = 0.20 * 14000 = 2800
       const r = computeContributions({
-        birthYear: byear(30), birthMonth: BIRTH_MONTH,
-        ordinaryWages: 8000, additionalWages: 10000,
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 8000,
+        additionalWages: 10000,
         monthlyOrdinaryWages: Array(11).fill(8000),
-        contributionYear: C_YEAR, contributionMonth: C_MONTH,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
       });
       expect(r).toEqual({ employee: 2800, employer: 2380, total: 5180 });
     });
@@ -131,10 +178,13 @@ describe('computeContributions', () => {
       // 11 prior months at $10,000 each → capped to $8,000 each → 88,000
       // Same result as above
       const r = computeContributions({
-        birthYear: byear(30), birthMonth: BIRTH_MONTH,
-        ordinaryWages: 8000, additionalWages: 10000,
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 8000,
+        additionalWages: 10000,
         monthlyOrdinaryWages: Array(11).fill(10000),
-        contributionYear: C_YEAR, contributionMonth: C_MONTH,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
       });
       expect(r).toEqual({ employee: 2800, employer: 2380, total: 5180 });
     });
@@ -153,10 +203,13 @@ describe('computeContributions', () => {
       // Only 12 months total, max 8,000 each = 96,000, so ceiling is always >= 6,000
       // AW ceiling can never be 0 with max 12 months — that's correct per CPF rules
       const r = computeContributions({
-        birthYear: byear(30), birthMonth: BIRTH_MONTH,
-        ordinaryWages: 8000, additionalWages: 5000,
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 8000,
+        additionalWages: 5000,
         monthlyOrdinaryWages: Array(11).fill(8000),
-        contributionYear: C_YEAR, contributionMonth: C_MONTH,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
       });
       // AW ceiling = 102,000 - 96,000 = 6,000 → AW 5,000 fully included
       // total = 0.37 * (8000 + 5000) = 4810
@@ -170,22 +223,29 @@ describe('computeContributions', () => {
       // AW ceiling = 102,000 - 96,000 = 6,000
       // AW = 5,000 < 6,000 → fully included
       const r = computeContributions({
-        birthYear: byear(30), birthMonth: BIRTH_MONTH,
-        ordinaryWages: 8000, additionalWages: 5000,
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 8000,
+        additionalWages: 5000,
         monthlyOrdinaryWages: Array(11).fill(8000),
-        contributionYear: C_YEAR, contributionMonth: 6,
+        contributionYear: C_YEAR,
+        contributionMonth: 6,
       });
       // total = 0.37 * (8000 + 5000) = 4810
       expect(r.total).toBe(4810);
     });
 
     it('rejects more than 11 entries', () => {
-      expect(() => computeContributions({
-        birthYear: byear(30), birthMonth: BIRTH_MONTH,
-        ordinaryWages: 5000,
-        monthlyOrdinaryWages: Array(12).fill(5000),
-        contributionYear: C_YEAR, contributionMonth: C_MONTH,
-      })).toThrow('max 11');
+      expect(() =>
+        computeContributions({
+          birthYear: byear(30),
+          birthMonth: BIRTH_MONTH,
+          ordinaryWages: 5000,
+          monthlyOrdinaryWages: Array(12).fill(5000),
+          contributionYear: C_YEAR,
+          contributionMonth: C_MONTH,
+        }),
+      ).toThrow('max 11');
     });
 
     it('defaults to no prior months when omitted', () => {
@@ -193,9 +253,12 @@ describe('computeContributions', () => {
       // OW = 8,000, AW = 90,000 → cappedAW = min(90,000, 102,000-8,000) = 90,000
       // total = 0.37 * 98,000 = 36,260
       const r = computeContributions({
-        birthYear: byear(30), birthMonth: BIRTH_MONTH,
-        ordinaryWages: 8000, additionalWages: 90000,
-        contributionYear: C_YEAR, contributionMonth: C_MONTH,
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 8000,
+        additionalWages: 90000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
       });
       expect(r.total).toBe(36260);
     });
@@ -203,42 +266,90 @@ describe('computeContributions', () => {
 
   describe('age boundaries - SC', () => {
     it('cpfAge 55 uses ≤55 bracket', () => {
-      const r = computeContributions({ birthYear: byear(55), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(55),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 1000, employer: 850, total: 1850 });
     });
 
     it('cpfAge 56 uses 55-60 bracket', () => {
-      const r = computeContributions({ birthYear: byear(56), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(56),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 900, employer: 800, total: 1700 });
     });
 
     it('cpfAge 60 uses 55-60 bracket', () => {
-      const r = computeContributions({ birthYear: byear(60), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(60),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 900, employer: 800, total: 1700 });
     });
 
     it('cpfAge 61 uses 60-65 bracket', () => {
-      const r = computeContributions({ birthYear: byear(61), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(61),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 625, employer: 625, total: 1250 });
     });
 
     it('cpfAge 65 uses 60-65 bracket', () => {
-      const r = computeContributions({ birthYear: byear(65), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(65),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 625, employer: 625, total: 1250 });
     });
 
     it('cpfAge 66 uses 65-70 bracket', () => {
-      const r = computeContributions({ birthYear: byear(66), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(66),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 375, employer: 450, total: 825 });
     });
 
     it('cpfAge 70 uses 65-70 bracket', () => {
-      const r = computeContributions({ birthYear: byear(70), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(70),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 375, employer: 450, total: 825 });
     });
 
     it('cpfAge 71 uses >70 bracket', () => {
-      const r = computeContributions({ birthYear: byear(71), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(71),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 5000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 250, employer: 375, total: 625 });
     });
   });
@@ -246,19 +357,37 @@ describe('computeContributions', () => {
   describe('birthday month bracket transition', () => {
     it('uses ≤55 bracket in the birthday month when turning 55', () => {
       // Born June 1971, contribution June 2026 → cpfAge 55
-      const r = computeContributions({ birthYear: 1971, birthMonth: 6, ordinaryWages: 5000, contributionYear: 2026, contributionMonth: 6 });
+      const r = computeContributions({
+        birthYear: 1971,
+        birthMonth: 6,
+        ordinaryWages: 5000,
+        contributionYear: 2026,
+        contributionMonth: 6,
+      });
       expect(r).toEqual({ employee: 1000, employer: 850, total: 1850 });
     });
 
     it('uses >55 bracket the month after turning 55', () => {
       // Born June 1971, contribution July 2026 → cpfAge 56
-      const r = computeContributions({ birthYear: 1971, birthMonth: 6, ordinaryWages: 5000, contributionYear: 2026, contributionMonth: 7 });
+      const r = computeContributions({
+        birthYear: 1971,
+        birthMonth: 6,
+        ordinaryWages: 5000,
+        contributionYear: 2026,
+        contributionMonth: 7,
+      });
       expect(r).toEqual({ employee: 900, employer: 800, total: 1700 });
     });
   });
 
   describe('residency statuses', () => {
-    const base = { birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 5000, contributionYear: C_YEAR, contributionMonth: C_MONTH };
+    const base = {
+      birthYear: byear(30),
+      birthMonth: BIRTH_MONTH,
+      ordinaryWages: 5000,
+      contributionYear: C_YEAR,
+      contributionMonth: C_MONTH,
+    };
 
     it('SPR_3 uses same rates as SC (Table 1)', () => {
       const sc = computeContributions({ ...base, residencyStatus: 'SC' });
@@ -289,19 +418,37 @@ describe('computeContributions', () => {
 
   describe('rounding', () => {
     it('rounds total at .50 up', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 250, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 250,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r.total).toBe(43);
       expect(r.employee).toBe(0);
       expect(r.employer).toBe(43);
     });
 
     it('rounds total at .49 down', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 85, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 85,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r.total).toBe(14);
     });
 
     it('floors employee share', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 4999, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 4999,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r.employee).toBe(999);
       expect(r.total).toBe(1850);
       expect(r.employer).toBe(851);
@@ -310,9 +457,15 @@ describe('computeContributions', () => {
 
   describe('OW + AW combined', () => {
     it('applies rates to OW and AW separately for >$750', () => {
-      const r = computeContributions({ birthYear: byear(30), birthMonth: BIRTH_MONTH, ordinaryWages: 6000, additionalWages: 2000, contributionYear: C_YEAR, contributionMonth: C_MONTH });
+      const r = computeContributions({
+        birthYear: byear(30),
+        birthMonth: BIRTH_MONTH,
+        ordinaryWages: 6000,
+        additionalWages: 2000,
+        contributionYear: C_YEAR,
+        contributionMonth: C_MONTH,
+      });
       expect(r).toEqual({ employee: 1600, employer: 1360, total: 2960 });
     });
   });
 });
-

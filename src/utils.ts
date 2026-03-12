@@ -40,13 +40,17 @@ export function computeCpfAge(
     throw new Error(`Invalid birthMonth: ${birthMonth} (must be 1–12)`);
   }
   if (contributionMonth < 1 || contributionMonth > 12) {
-    throw new Error(`Invalid contributionMonth: ${contributionMonth} (must be 1–12)`);
+    throw new Error(
+      `Invalid contributionMonth: ${contributionMonth} (must be 1–12)`,
+    );
   }
   if (birthYear < 1900) {
     throw new Error(`Invalid birthYear: ${birthYear} (must be 1900 or later)`);
   }
   if (birthYear >= contributionYear) {
-    throw new Error(`birthYear (${birthYear}) must be before contributionYear (${contributionYear})`);
+    throw new Error(
+      `birthYear (${birthYear}) must be before contributionYear (${contributionYear})`,
+    );
   }
   const yearDiff = contributionYear - birthYear;
   return contributionMonth > birthMonth ? yearDiff + 1 : yearDiff;

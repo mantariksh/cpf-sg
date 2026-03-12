@@ -39,6 +39,7 @@ const withBonus = computeContributions({
   contributionYear: 2026,
   contributionMonth: 12,
 });
+// { employee: 3000, employer: 2550, total: 5550 }
 
 // Allocate contributions across CPF accounts
 const allocation = computeAllocation({
@@ -48,7 +49,7 @@ const allocation = computeAllocation({
   contributionYear: 2026,
   contributionMonth: 1,
 });
-// { ordinaryAccount: 1149.15, specialAccount: 299.89, retirementAccount: 0, medisaveAccount: 400.96 }
+// { ordinaryAccount: 1150.15, specialAccount: 299.88, retirementAccount: 0, medisaveAccount: 399.97 }
 
 // Compute the CPF effective age directly
 const cpfAge = computeCpfAge(1996, 6, 2026, 1); // 30
@@ -104,7 +105,7 @@ computeContributions({
 // AW ceiling = $102,000 − $96,000 = $6,000
 ```
 
-If omitted, only the current month's OW is counted, giving the maximum possible AW ceiling. This is suitable when no other OW has been or will be paid in the year.
+If omitted, only the current month's OW is counted, giving the maximum possible AW ceiling. This is suitable when no other OW has been or will be paid in the year, or if `additionalWages` is 0.
 
 ## API
 
